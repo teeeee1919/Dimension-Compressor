@@ -9,8 +9,8 @@
     .status-panel { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; background: #2b2b36; padding: 15px; border-radius: 10px; }
     .stat { font-size: 18px; font-weight: bold; }
     
-    .game-container { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
-    .zone { width: 300px; min-height: 250px; background: #2b2b36; border-radius: 10px; padding: 15px; border: 2px solid #3f3f52; }
+    .game-container { display: flex; justify-content: center; gap: 20px; margin-top: 20px; flex-wrap: wrap; }
+    .zone { width: 320px; min-height: 250px; background: #2b2b36; border-radius: 10px; padding: 15px; border: 2px solid #3f3f52; }
     .zone.locked { opacity: 0.5; filter: grayscale(1); }
     
     button { padding: 10px 15px; font-size: 14px; cursor: pointer; border-radius: 6px; border: none; background-color: #4e9caf; color: white; margin: 5px; font-weight: bold; }
@@ -18,6 +18,12 @@
     
     .progress-bar-container { width: 100%; background-color: #444; border-radius: 5px; margin: 10px 0; height: 12px; overflow: hidden; }
     .progress-bar { width: 0%; height: 100%; background-color: #4caf50; transition: width 0.05s linear; }
+
+    /* Modal Style */
+    .modal { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); }
+    .modal-content { background-color: #2b2b36; margin: 15% auto; padding: 20px; border: 1px solid #4e9caf; width: 300px; border-radius: 10px; text-align: left; }
+    .close-btn { float: right; font-size: 20px; font-weight: bold; cursor: pointer; color: #aaa; }
+    .close-btn:hover { color: #fff; }
   </style>
 </head>
 <body>
@@ -31,17 +37,19 @@
     <div class="stat" id="shardContainer" style="display:none;">Shard: <span id="shard">0</span></div>
   </div>
 
+  <button id="infoBtn" style="background-color: #8a2be2;">📊 채굴 정보 보기</button>
+
   <div class="game-container">
-    <!-- 구역 1: Dust 존 -->
+    <!-- 구역 1: Dust & Shard Zone -->
     <div class="zone">
-      <h2>1D Dust Zone</h2>
-      <p id="dustStatus">Dust 재생산 중...</p>
+      <h2>1D & 2D Zone</h2>
+      <p id="targetStatus">스폰 대기 중...</p>
       
       <div class="progress-bar-container">
         <div id="miningBar" class="progress-bar"></div>
       </div>
 
-      <button id="mineBtn" disabled>Dust 채굴하기</button>
+      <button id="mineBtn" disabled>채굴하기</button>
       <hr style="border-color: #444; margin: 15px 0;">
 
       <!-- 해금 및 업그레이드 버튼 -->
@@ -53,15 +61,37 @@
       </div>
 
       <br>
-      <button id="upgradeSpeedBtn">채굴 속도 업그레이드 (Dust 5)</button>
+      <button id="upgradeMiningBtn">채굴 업그레이드</button>
       <br>
-      <button id="mainUpgradeBtn" style="display:none;">차원 업그레이드 (Shard 3)</button>
+      <button id="upgradeDustBtn" style="display:none;">Dust 업그레이드</button>
     </div>
 
     <!-- 잠긴 구역 2 -->
     <div id="zone2" class="zone locked">
-      <h2>Locked Zone</h2>
+      <h2>Next Zone</h2>
       <p>잠김 (Level 5 필요)</p>
+    </div>
+  </div>
+
+  <!-- 채굴 정보 모달 창 -->
+  <div id="infoModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeModal">&times;</span>
+      <h3>📊 채굴 정보</h3>
+      <p><b>채굴 업그레이드 단계:</b> Lv.<span id="infoMineLv">0</span></p>
+      <p><b>Dust 업그레이드 단계:</b> Lv.<span id="infoDustLv">0</span></p>
+
+      <hr style="border-color: #555;">
+      <p><b>[현재 소요 시간]</b></p>
+      <p>• Dust 채굴: <span id="infoDustTime">3초</span></p>
+      <p>• Shard 채굴: <span id="infoShardTime">불가</span></p>
+      <p>• 3D Crystal 채굴: <span id="infoCrystalTime">불가</span></p>
+      <p>• 4D Matter 채굴: <span id="infoMatterTime">불가</span></p>
+
+      <hr style="border-color: #555;">
+      <p><b>[재생산 대기 시간]</b></p>
+      <p>• Dust 재생산: <span id="infoDustRespawn">40틱 (2초)</span></p>
+      <p>• Shard 재생산 조건: <span id="infoShardRespawn">Dust 3회 채굴 시</span></p>
     </div>
   </div>
 
